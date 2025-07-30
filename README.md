@@ -48,11 +48,13 @@ NaviCode는 주소나 장소명을 입력하지 않아도,
 git clone https://github.com/your-username/NaviCodeApp.git
 cd NaviCodeApp
 npm install
+```
 
-### ✅ 2. Expo 실행
+ ### ✅ 2. Expo 실행
 
 ```bash
 npm start
+```
 
 - Android: Expo Go 앱 설치 후 QR코드 스캔
 - iOS: 동일하게 Expo Go 앱에서 실행
