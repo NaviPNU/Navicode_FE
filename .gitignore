@@ -1,0 +1,25 @@
+﻿# Node modules
+node_modules/
+
+# Expo-specific
+.expo/
+.expo-shared/
+
+# Environment variables
+.env
+.env.*
+
+# Build output
+build/
+dist/
+*.apk
+*.aab
+*.ipa
+
+# Logs and cache
+*.log
+.cache/
+tmp/
+
+# macOS system files
+.DS_Store
