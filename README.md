@@ -46,14 +46,17 @@ NaviCode는 주소나 장소명을 입력하지 않아도,
 ### ✅ 1. 프로젝트 클론 및 의존성 설치
 
 ```bash
-git clone https://github.com/your-username/NaviCode_FE.git
-cd NaviCode_FE
-npx create-expo-app NaviCodeApp
 
-### ✅ 2. Expo 실행
+npx create-expo-app NaviCodeApp
+cd NaviCodeApp
+npm install
+```
+
+ ### ✅ 2. Expo 실행
 
 ```bash
 npx expo start
+```
 
 - Android: Expo Go 앱 설치 후 QR코드 스캔
 - iOS: 동일하게 Expo Go 앱에서 실행
