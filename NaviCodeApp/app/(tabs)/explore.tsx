@@ -1,5 +1,7 @@
 import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
+import { useTheme } from '@emotion/react';
+import type { AppTheme } from '@/theme';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -9,13 +11,19 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function TabTwoScreen() {
+  const theme = useTheme() as AppTheme;
+  const styles = useStyles(theme);
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={{
+        light: theme.colors.gray500,
+        dark: theme.colors.gray900,
+      }}
       headerImage={
         <IconSymbol
           size={310}
-          color="#808080"
+          color={theme.colors.gray600}
           name="chevron.left.forwardslash.chevron.right"
           style={styles.headerImage}
         />
@@ -63,7 +71,7 @@ export default function TabTwoScreen() {
         <ThemedText>
           Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{' '}
           to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
+          <ThemedText style={{ fontFamily: theme.fonts.mono }}>
             custom fonts such as this one.
           </ThemedText>
         </ThemedText>
@@ -101,15 +109,17 @@ export default function TabTwoScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+function useStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    headerImage: {
+      color: theme.colors.gray600,
+      bottom: -90,
+      left: -35,
+      position: 'absolute',
+    },
+    titleContainer: {
+      flexDirection: 'row',
+      gap: theme.spacing.spacing2,
+    },
+  });
+}
