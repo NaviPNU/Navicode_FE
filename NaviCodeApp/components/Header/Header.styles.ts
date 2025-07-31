@@ -2,7 +2,7 @@
 import { AppTheme } from '@/theme';
 
 export const Container = styled.View(({ theme }: { theme: AppTheme }) => ({
-  height: 56,
+  height: theme.spacing.spacing14,
   paddingHorizontal: theme.spacing.spacing4,
   flexDirection: 'row',
   alignItems: 'center',
@@ -11,15 +11,17 @@ export const Container = styled.View(({ theme }: { theme: AppTheme }) => ({
 
 export const Title = styled.Text(({ theme }: { theme: AppTheme }) => ({
   ...theme.typography.title2Bold,
-  fontFamily: 'Pretendard',
+  fontFamily: theme.fonts.primary,
 }));
 
-const IconButton = styled.TouchableOpacity({
-  width: 40,
-  height: 40,
-  alignItems: 'center',
-  justifyContent: 'center',
-});
+const IconButton = styled.TouchableOpacity(
+  ({ theme }: { theme: AppTheme }) => ({
+    width: theme.spacing.spacing10,
+    height: theme.spacing.spacing10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }),
+);
 
 export const Back = styled(IconButton)({});
 export const Right = styled(IconButton)({});
