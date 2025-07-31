@@ -12,6 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { theme } from '@/theme';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { CodeProvider } from '@/contexts/CodeContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -35,17 +37,21 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationThemeProvider
-        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-      >
-        <EmotionThemeProvider theme={theme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </EmotionThemeProvider>
-      </NavigationThemeProvider>
+      <AuthProvider>
+        <CodeProvider>
+          <NavigationThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <EmotionThemeProvider theme={theme}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </EmotionThemeProvider>
+          </NavigationThemeProvider>
+        </CodeProvider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }
