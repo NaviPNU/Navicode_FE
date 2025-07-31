@@ -23,3 +23,8 @@ export async function registerApi(
     },
   };
 }
+
+export async function checkUsernameApi(username: string) {
+  return { available: username !== 'taken' };
+}
+

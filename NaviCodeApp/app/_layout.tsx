@@ -12,8 +12,32 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { theme } from '@/theme';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CodeProvider } from '@/contexts/CodeContext';
+
+function Navigation() {
+  const { state } = useAuth();
+  if (state.loading) {
+    return null;
+  }
+
+  if (state.token == null) {
+    return (
+      <Stack>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="signup" options={{ headerShown: false }} />
+      </Stack>
+    );
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -43,10 +67,7 @@ export default function RootLayout() {
             value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
           >
             <EmotionThemeProvider theme={theme}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
+              <Navigation />
               <StatusBar style="auto" />
             </EmotionThemeProvider>
           </NavigationThemeProvider>
