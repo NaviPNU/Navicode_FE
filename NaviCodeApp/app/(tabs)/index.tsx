@@ -1,90 +1,130 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import MapView from 'react-native-maps';
+import * as Location from 'expo-location';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { MapViewWithPin } from '@/components/MapViewWithPin/MapViewWithPin';
+import { SearchBar } from '@/components/SearchBar';
+import { CurrentLocationButton } from '@/components/CurrentLocationButton';
 
 export default function HomeScreen() {
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
+  const mapRef = useRef<MapView>(null);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number }>();
 
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{
-        light: theme.colors.blue400,
-        dark: theme.colors.blue800,
-      }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
+  const markers = [
+    { latitude: 37.5665, longitude: 126.978 },
+    { latitude: 37.5655, longitude: 126.976 },
+    { latitude: 37.567, longitude: 126.979 },
+  ];
+
+  const handleCurrentLocation = async () => {
+    if (!mapRef.current) return;
+
+    if (userLocation) {
+      mapRef.current.animateToRegion({
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      return;
+    }
+
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn('Permission to access location was denied');
+        return;
       }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">
-            npm run reset-project
-          </ThemedText>{' '}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{' '}
-          directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
+      const coords = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      setUserLocation(coords);
+      mapRef.current.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        await Location.requestForegroundPermissionsAsync();
+      } catch (e) {
+        console.warn(e);
+      }
+    })();
+  }, []);
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.brandContainer}>
+          <Text style={styles.brandText}>NaviCode</Text>
+        </View>
+      </View>
+      <View style={styles.mapContainer}>
+        <MapViewWithPin
+          ref={mapRef}
+          showUserLocation
+          markers={markers}
+          onUserLocationChange={(coords) => setUserLocation(coords)}
+        />
+        <View style={styles.searchOverlay} pointerEvents="box-none">
+          <SearchBar />
+        </View>
+        <CurrentLocationButton onPress={handleCurrentLocation} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 function useStyles(theme: AppTheme) {
   return StyleSheet.create({
-    titleContainer: {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundDefault,
+    },
+    header: {
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing.spacing4,
+      paddingVertical: theme.spacing.spacing4,
+    },
+    brandContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
       gap: theme.spacing.spacing2,
     },
-    stepContainer: {
-      gap: theme.spacing.spacing2,
-      marginBottom: theme.spacing.spacing2,
+    brandText: {
+      textAlign: 'center',
+      ...theme.typography.title1Bold,
+      color: theme.colors.textDefault,
     },
-    reactLogo: {
-      height: 178,
-      width: 290,
-      bottom: 0,
-      left: 0,
+    mapContainer: {
+      flex: 1,
+      position: 'relative',
+    },
+    searchOverlay: {
       position: 'absolute',
+      top: theme.spacing.spacing4,
+      left: 0,
+      right: 0,
+      zIndex: 1,
     },
   });
 }
