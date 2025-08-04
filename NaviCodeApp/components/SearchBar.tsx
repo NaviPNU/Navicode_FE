@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
@@ -75,11 +69,7 @@ export function SearchBar({
     <View style={styles.wrapper}>
       <View style={styles.container}>
         <TouchableOpacity onPress={handleSearch}>
-          <MaterialIcons
-            name="search"
-            size={20}
-            color={theme.colors.textPlaceholder}
-          />
+          <MaterialIcons name="search" size={20} color={theme.colors.textPlaceholder} />
         </TouchableOpacity>
         <TextInput
           style={styles.input}

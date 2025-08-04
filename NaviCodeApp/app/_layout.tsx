@@ -37,7 +37,6 @@ function Navigation() {
   );
 }
 
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -62,9 +61,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <CodeProvider>
-          <NavigationThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
+          <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <EmotionThemeProvider theme={theme}>
               <Navigation />
               <StatusBar style="auto" />

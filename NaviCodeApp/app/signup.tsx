@@ -30,12 +30,7 @@ export default function SignUpScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.column}>
         <Text style={styles.title}>NaviCode</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
+        <TextInput style={styles.input} placeholder="Name" value={name} onChangeText={setName} />
         <TextInput
           style={styles.input}
           placeholder="ID"

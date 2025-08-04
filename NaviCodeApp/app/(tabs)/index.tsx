@@ -14,7 +14,10 @@ export default function HomeScreen() {
   const router = useRouter();
   const styles = useStyles(theme);
   const mapRef = useRef<MapView>(null);
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number }>();
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>();
 
   const markers = [
     { latitude: 37.5665, longitude: 126.978 },

@@ -27,13 +27,10 @@ describe('coord api', () => {
 
     await getCoordType('3333');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${BASE_URL}/coord_type?navicode=3333`,
-      {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    expect(global.fetch).toHaveBeenCalledWith(`${BASE_URL}/coord_type?navicode=3333`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
   });
 
   it('정적 좌표를 가져온다', async () => {

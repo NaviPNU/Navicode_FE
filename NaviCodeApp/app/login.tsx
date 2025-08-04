@@ -29,10 +29,12 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.column}>
         {/* 개발자 전용 임시 홈 이동 */}
-        <TouchableOpacity onPress={() => router.replace('/')}
-          accessibilityLabel="개발자 홈 바로가기">
+        <TouchableOpacity
+          onPress={() => router.replace('/')}
+          accessibilityLabel="개발자 홈 바로가기"
+        >
           <Text style={styles.title}>NaviCode</Text>
-        </TouchableOpacity>        
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="ID"
