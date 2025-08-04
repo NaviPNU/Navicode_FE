@@ -83,7 +83,7 @@ export default function HomeScreen() {
           onUserLocationChange={(coords) => setUserLocation(coords)}
         />
         <View style={styles.searchOverlay} pointerEvents="box-none">
-          <SearchBar />
+          <SearchBar location={userLocation} />
         </View>
         <CurrentLocationButton onPress={handleCurrentLocation} />
       </View>

@@ -10,21 +10,33 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 import { useCode } from '@/contexts/CodeContext';
+import {
+  getCoordType,
+  getCoordStatic,
+  getCoordDynamic,
+  StaticCoord,
+  DynamicCoord,
+} from '@/api/coord';
 
 interface SearchBarProps {
   placeholder?: string;
   onChangeText?: (text: string) => void;
+  location?: { latitude: number; longitude: number };
 }
 
 export function SearchBar({
   placeholder = 'NaviCode 검색',
   onChangeText,
+  location,
 }: SearchBarProps) {
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
   const { state } = useCode();
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
+  const [resultType, setResultType] = useState<'1' | '2' | null>(null);
+  const [staticResult, setStaticResult] = useState<StaticCoord | null>(null);
+  const [dynamicResult, setDynamicResult] = useState<DynamicCoord[]>([]);
 
   const handleChangeText = (value: string) => {
     setText(value);
@@ -37,14 +49,38 @@ export function SearchBar({
     setFocused(false);
   };
 
+  const handleSearch = async () => {
+    try {
+      const type = await getCoordType(text);
+      setResultType(type);
+      if (type === '1' && location) {
+        const res = await getCoordDynamic(
+          text,
+          location.latitude.toString(),
+          location.longitude.toString(),
+        );
+        setDynamicResult(res);
+        setStaticResult(null);
+      } else if (type === '2') {
+        const res = await getCoordStatic(text);
+        setStaticResult(res);
+        setDynamicResult([]);
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
   return (
-        <View style={styles.wrapper}>
+    <View style={styles.wrapper}>
       <View style={styles.container}>
-        <MaterialIcons
-          name="search"
-          size={20}
-          color={theme.colors.textPlaceholder}
-        />
+        <TouchableOpacity onPress={handleSearch}>
+          <MaterialIcons
+            name="search"
+            size={20}
+            color={theme.colors.textPlaceholder}
+          />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder={placeholder}
@@ -54,6 +90,7 @@ export function SearchBar({
           value={text}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          onSubmitEditing={handleSearch}
         />
       </View>
       {focused && (
@@ -84,6 +121,22 @@ export function SearchBar({
               ))}
             </View>
           )}
+        </View>
+      )}
+      {resultType === '2' && staticResult && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.sectionTitle}>정적 결과</Text>
+          <Text style={styles.itemText}>{staticResult.name}</Text>
+        </View>
+      )}
+      {resultType === '1' && dynamicResult.length > 0 && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.sectionTitle}>동적 결과</Text>
+          {dynamicResult.map((item, idx) => (
+            <Text key={idx} style={styles.itemText}>
+              {item.name}
+            </Text>
+          ))}
         </View>
       )}
     </View>
@@ -121,6 +174,15 @@ function useStyles(theme: AppTheme) {
       padding: theme.spacing.spacing2,
       gap: theme.spacing.spacing2,
     },
+    resultContainer: {
+      marginTop: theme.spacing.spacing1,
+      backgroundColor: theme.colors.backgroundDefault,
+      borderWidth: 1,
+      borderColor: theme.colors.borderDefault,
+      borderRadius: theme.spacing.spacing3,
+      padding: theme.spacing.spacing2,
+      gap: theme.spacing.spacing2,
+    },
     section: {
       gap: theme.spacing.spacing1,
     },
@@ -132,6 +194,6 @@ function useStyles(theme: AppTheme) {
       ...theme.typography.body2Regular,
       color: theme.colors.textDefault,
       paddingVertical: theme.spacing.spacing1,
-    }
+    },
   });
 }
