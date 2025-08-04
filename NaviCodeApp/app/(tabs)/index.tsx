@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useTheme } from '@emotion/react';
@@ -7,9 +7,11 @@ import type { AppTheme } from '@/theme';
 import { MapViewWithPin } from '@/components/MapViewWithPin/MapViewWithPin';
 import { SearchBar } from '@/components/SearchBar';
 import { CurrentLocationButton } from '@/components/CurrentLocationButton';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const theme = useTheme() as AppTheme;
+  const router = useRouter();
   const styles = useStyles(theme);
   const mapRef = useRef<MapView>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number }>();
@@ -71,6 +73,23 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        {__DEV__ && (
+          <TouchableOpacity
+            style={styles.devButton}
+            onPress={() =>
+              router.push({
+                pathname: '/static-result',
+                params: {
+                  name: '테스트 장소',
+                  latitude: '37.5665',
+                  longitude: '126.9780',
+                },
+              })
+            }
+          >
+            <Text style={styles.devButtonText}>정적 결과보기</Text>
+          </TouchableOpacity>
+        )}
         <View style={styles.brandContainer}>
           <Text style={styles.brandText}>NaviCode</Text>
         </View>
@@ -103,6 +122,18 @@ function useStyles(theme: AppTheme) {
       justifyContent: 'center',
       paddingHorizontal: theme.spacing.spacing4,
       paddingVertical: theme.spacing.spacing4,
+    },
+    devButton: {
+      position: 'absolute',
+      left: theme.spacing.spacing4,
+      paddingVertical: theme.spacing.spacing1,
+      paddingHorizontal: theme.spacing.spacing2,
+      borderRadius: theme.spacing.spacing2,
+      backgroundColor: theme.colors.backgroundFill,
+    },
+    devButtonText: {
+      ...theme.typography.label2Bold,
+      color: theme.colors.textDefault,
     },
     brandContainer: {
       flexDirection: 'row',
