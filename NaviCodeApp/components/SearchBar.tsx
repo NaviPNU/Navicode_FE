@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 import { useCode } from '@/contexts/CodeContext';
+import { useCoordSearch } from '@/hooks/useCoordSearch';
+import { useRouter } from 'expo-router';
 
 interface SearchBarProps {
   placeholder?: string;
   onChangeText?: (text: string) => void;
+  location?: { latitude: number; longitude: number };
 }
 
 export function SearchBar({
   placeholder = 'NaviCode 검색',
   onChangeText,
+  location,
 }: SearchBarProps) {
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
   const { state } = useCode();
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
+  const { search } = useCoordSearch();
+
+  const router = useRouter();
 
   const handleChangeText = (value: string) => {
     setText(value);
@@ -37,14 +38,39 @@ export function SearchBar({
     setFocused(false);
   };
 
+  const handleSearch = async () => {
+    try {
+      const res = await search(text, location);
+      if (res.type === '2' && res.staticResult) {
+        router.push({
+          pathname: '/static-result',
+          params: {
+            name: res.staticResult.name,
+            latitude: res.staticResult.latitude.toString(),
+            longitude: res.staticResult.longitude.toString(),
+          },
+        });
+      } else if (res.type === '1') {
+        router.push({
+          pathname: '/dynamic-result',
+          params: {
+            navicode: text,
+            latitude: location?.latitude?.toString() ?? '',
+            longitude: location?.longitude?.toString() ?? '',
+          },
+        });
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
   return (
-        <View style={styles.wrapper}>
+    <View style={styles.wrapper}>
       <View style={styles.container}>
-        <MaterialIcons
-          name="search"
-          size={20}
-          color={theme.colors.textPlaceholder}
-        />
+        <TouchableOpacity onPress={handleSearch}>
+          <MaterialIcons name="search" size={20} color={theme.colors.textPlaceholder} />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder={placeholder}
@@ -54,6 +80,7 @@ export function SearchBar({
           value={text}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          onSubmitEditing={handleSearch}
         />
       </View>
       {focused && (
@@ -132,6 +159,6 @@ function useStyles(theme: AppTheme) {
       ...theme.typography.body2Regular,
       color: theme.colors.textDefault,
       paddingVertical: theme.spacing.spacing1,
-    }
+    },
   });
 }

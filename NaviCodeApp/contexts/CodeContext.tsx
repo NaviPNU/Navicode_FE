@@ -61,23 +61,16 @@ const CodeContext = createContext<{
   removeFavorite: () => {},
 });
 
-export const CodeProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const CodeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(codeReducer, initialCodeState);
 
-  const addRecent = (item: CodeItem) =>
-    dispatch({ type: 'ADD_RECENT', payload: item });
+  const addRecent = (item: CodeItem) => dispatch({ type: 'ADD_RECENT', payload: item });
   const clearRecent = () => dispatch({ type: 'CLEAR_RECENT' });
-  const addFavorite = (item: CodeItem) =>
-    dispatch({ type: 'ADD_FAVORITE', payload: item });
-  const removeFavorite = (code: string) =>
-    dispatch({ type: 'REMOVE_FAVORITE', payload: code });
+  const addFavorite = (item: CodeItem) => dispatch({ type: 'ADD_FAVORITE', payload: item });
+  const removeFavorite = (code: string) => dispatch({ type: 'REMOVE_FAVORITE', payload: code });
 
   return (
-    <CodeContext.Provider
-      value={{ state, addRecent, clearRecent, addFavorite, removeFavorite }}
-    >
+    <CodeContext.Provider value={{ state, addRecent, clearRecent, addFavorite, removeFavorite }}>
       {children}
     </CodeContext.Provider>
   );

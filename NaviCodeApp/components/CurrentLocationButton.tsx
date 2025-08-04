@@ -1,19 +1,20 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 
 interface CurrentLocationButtonProps {
   onPress: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-export function CurrentLocationButton({ onPress }: CurrentLocationButtonProps) {
+export function CurrentLocationButton({ onPress, style }: CurrentLocationButtonProps) {
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
 
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
       <MaterialIcons name="my-location" size={20} color={theme.colors.textDefault} />
     </TouchableOpacity>
   );
