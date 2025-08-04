@@ -1,11 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import MapView from 'react-native-maps';
+import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 import { MapViewWithPin } from '@/components/MapViewWithPin/MapViewWithPin';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { getCoordDynamic, DynamicCoord } from '@/api/coord';
+import { CurrentLocationButton } from '@/components/CurrentLocationButton';
 
 interface ResultItem extends DynamicCoord {
   distance: number;
@@ -23,6 +26,46 @@ export default function DynamicResultScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const mapRef = useRef<MapView>(null);
+
+  const handleCurrentLocation = async () => {
+    if (!mapRef.current) return;
+
+    if (userLocation) {
+      mapRef.current.animateToRegion({
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      return;
+    }
+
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn('Permission to access location was denied');
+        return;
+      }
+
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
+      const coords = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      setUserLocation(coords);
+      mapRef.current.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -71,6 +114,7 @@ export default function DynamicResultScreen() {
   return (
     <View style={styles.container}>
       <MapViewWithPin
+        ref={mapRef}
         markers={displayed.map(({ latitude, longitude }) => ({
           latitude,
           longitude,
@@ -108,6 +152,10 @@ export default function DynamicResultScreen() {
           ))}
         </BottomSheetView>
       </BottomSheet>
+      <CurrentLocationButton
+        onPress={handleCurrentLocation}
+        style={styles.currentLocationButton}
+      />
     </View>
   );
 }
@@ -165,6 +213,10 @@ function useStyles(theme: AppTheme) {
     itemMeta: {
       ...theme.typography.body2Regular,
       color: theme.colors.textSub,
+    },
+    currentLocationButton: {
+      bottom: undefined,
+      top: theme.spacing.spacing4,
     },
   });
 }
