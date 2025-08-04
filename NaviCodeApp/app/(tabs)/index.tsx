@@ -93,6 +93,23 @@ export default function HomeScreen() {
         <View style={styles.brandContainer}>
           <Text style={styles.brandText}>NaviCode</Text>
         </View>
+        {__DEV__ && (
+          <TouchableOpacity
+            style={styles.devButtonRight}
+            onPress={() =>
+              router.push({
+                pathname: '/dynamic-result',
+                params: {
+                  navicode: 'TEST123',
+                  latitude: '37.5665',
+                  longitude: '126.9780',
+                },
+              })
+            }
+          >
+            <Text style={styles.devButtonText}>동적 결과보기</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.mapContainer}>
         <MapViewWithPin
@@ -134,6 +151,14 @@ function useStyles(theme: AppTheme) {
     devButtonText: {
       ...theme.typography.label2Bold,
       color: theme.colors.textDefault,
+    },
+    devButtonRight: {
+      position: 'absolute',
+      right: theme.spacing.spacing4,
+      paddingVertical: theme.spacing.spacing1,
+      paddingHorizontal: theme.spacing.spacing2,
+      borderRadius: theme.spacing.spacing2,
+      backgroundColor: theme.colors.backgroundFill,
     },
     brandContainer: {
       flexDirection: 'row',
