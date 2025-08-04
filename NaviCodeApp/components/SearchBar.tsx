@@ -11,6 +11,7 @@ import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 import { useCode } from '@/contexts/CodeContext';
 import { useCoordSearch } from '@/hooks/useCoordSearch';
+import { useRouter } from 'expo-router';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -29,6 +30,7 @@ export function SearchBar({
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
   const { resultType, staticResult, dynamicResult, search } = useCoordSearch();
+  const router = useRouter();
 
   const handleChangeText = (value: string) => {
     setText(value);
@@ -43,7 +45,17 @@ export function SearchBar({
 
   const handleSearch = async () => {
     try {
-      await search(text, location);
+      const res = await search(text, location);
+      if (res.type === '2' && res.staticResult) {
+        router.push({
+          pathname: '/static-result',
+          params: {
+            name: res.staticResult.name,
+            latitude: res.staticResult.latitude.toString(),
+            longitude: res.staticResult.longitude.toString(),
+          },
+        });
+      }
     } catch (e) {
       console.warn(e);
     }
@@ -99,12 +111,6 @@ export function SearchBar({
               ))}
             </View>
           )}
-        </View>
-      )}
-      {resultType === '2' && staticResult && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.sectionTitle}>정적 결과</Text>
-          <Text style={styles.itemText}>{staticResult.name}</Text>
         </View>
       )}
       {resultType === '1' && dynamicResult.length > 0 && (

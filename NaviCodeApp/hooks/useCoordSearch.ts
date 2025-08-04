@@ -20,6 +20,7 @@ export function useCoordSearch() {
   const search = async (navicode: string, location?: Location) => {
     const type = await getCoordType(navicode);
     setResultType(type);
+
     if (type === '1' && location) {
       const res = await getCoordDynamic(
         navicode,
@@ -28,14 +29,18 @@ export function useCoordSearch() {
       );
       setDynamicResult(res);
       setStaticResult(null);
-    } else if (type === '2') {
+      return { type, staticResult: null, dynamicResult: res };
+    }
+
+    if (type === '2') {
       const res = await getCoordStatic(navicode);
       setStaticResult(res);
       setDynamicResult([]);
-    } else {
-      setStaticResult(null);
-      setDynamicResult([]);
+      return { type, staticResult: res, dynamicResult: [] };
     }
+    setStaticResult(null);
+    setDynamicResult([]);
+    return { type: null, staticResult: null, dynamicResult: [] };
   };
 
   return { resultType, staticResult, dynamicResult, search };
