@@ -1,16 +1,13 @@
-const BASE_URL = 'http://222.122.81.141:5000';
+import { request } from './client';
 
 export interface CoordTypeResponse {
   type: '1' | '2';
 }
 
 export async function getCoordType(navicode: string) {
-  const res = await fetch(`${BASE_URL}/coord_type`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ navicode }),
+  const data = await request<CoordTypeResponse>('/coord_type', {
+    body: { navicode },
   });
-  const data: CoordTypeResponse = await res.json();
   return data.type;
 }
 
@@ -21,13 +18,9 @@ export interface StaticCoord {
 }
 
 export async function getCoordStatic(navicode: string) {
-  const res = await fetch(`${BASE_URL}/get_coord_static`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ navicode }),
+  return request<StaticCoord>('/get_coord_static', {
+    body: { navicode },
   });
-  const data: StaticCoord = await res.json();
-  return data;
 }
 
 export interface DynamicCoord {
@@ -41,11 +34,7 @@ export async function getCoordDynamic(
   latitude: string,
   longitude: string,
 ) {
-  const res = await fetch(`${BASE_URL}/get_coord_dynamic`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ navicode, latitude, longitude }),
+  return request<DynamicCoord[]>('/get_coord_dynamic', {
+    body: { navicode, latitude, longitude },
   });
-  const data: DynamicCoord[] = await res.json();
-  return data;
 }

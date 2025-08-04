@@ -10,13 +10,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
 import { useCode } from '@/contexts/CodeContext';
-import {
-  getCoordType,
-  getCoordStatic,
-  getCoordDynamic,
-  StaticCoord,
-  DynamicCoord,
-} from '@/api/coord';
+import { useCoordSearch } from '@/hooks/useCoordSearch';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -34,9 +28,7 @@ export function SearchBar({
   const { state } = useCode();
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
-  const [resultType, setResultType] = useState<'1' | '2' | null>(null);
-  const [staticResult, setStaticResult] = useState<StaticCoord | null>(null);
-  const [dynamicResult, setDynamicResult] = useState<DynamicCoord[]>([]);
+  const { resultType, staticResult, dynamicResult, search } = useCoordSearch();
 
   const handleChangeText = (value: string) => {
     setText(value);
@@ -51,21 +43,7 @@ export function SearchBar({
 
   const handleSearch = async () => {
     try {
-      const type = await getCoordType(text);
-      setResultType(type);
-      if (type === '1' && location) {
-        const res = await getCoordDynamic(
-          text,
-          location.latitude.toString(),
-          location.longitude.toString(),
-        );
-        setDynamicResult(res);
-        setStaticResult(null);
-      } else if (type === '2') {
-        const res = await getCoordStatic(text);
-        setStaticResult(res);
-        setDynamicResult([]);
-      }
+      await search(text, location);
     } catch (e) {
       console.warn(e);
     }
