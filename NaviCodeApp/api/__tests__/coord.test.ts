@@ -28,10 +28,11 @@ describe('coord api', () => {
     await getCoordType('3333');
 
     expect(global.fetch).toHaveBeenCalledWith(
-      `${BASE_URL}/coord_type?navicode=3333`,
+      `${BASE_URL}/coord_type`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ navicode: '3333' }),
       },
     );
   });
