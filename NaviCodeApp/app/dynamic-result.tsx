@@ -13,26 +13,55 @@ interface ResultItem extends DynamicCoord {
 }
 
 export default function DynamicResultScreen() {
-  const { navicode, latitude, longitude } = useLocalSearchParams<{
-    navicode: string;
-    latitude: string;
-    longitude: string;
-  }>();
+  const { navicode } = useLocalSearchParams<{ navicode: string }>();
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
   const [results, setResults] = useState<ResultItem[]>([]);
   const [filterOn, setFilterOn] = useState(false);
 
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.warn('Permission to access location was denied');
+          return;
+        }
+        const position = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+        });
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      } catch (e) {
+        console.warn(e);
+      }
+    })();
+  }, []);
   useEffect(() => {
     async function fetchResults() {
-      if (!navicode || !latitude || !longitude) return;
+      if (!navicode || !userLocation) return;
       try {
-        const res = await getCoordDynamic(navicode, latitude, longitude);
-        const lat = Number(latitude);
-        const lng = Number(longitude);
+        const { latitude, longitude } = userLocation;
+        const res = await getCoordDynamic(
+          navicode,
+          latitude.toString(),
+          longitude.toString(),
+        );
         const mapped: ResultItem[] = res.map((item) => {
-          const distance = calculateDistance(lat, lng, item.latitude, item.longitude);
-          const time = (distance / 4) * 60; // 4km/h walking speed
+        const distance = calculateDistance(
+            latitude,
+            longitude,
+            item.latitude,
+            item.longitude,
+          );
+        const time = (distance / 4) * 60; // 4km/h walking speed
           return { ...item, distance, time };
         });
         setResults(mapped);
@@ -41,7 +70,7 @@ export default function DynamicResultScreen() {
       }
     }
     fetchResults();
-  }, [navicode, latitude, longitude]);
+  }, [navicode, userLocation]);
 
   const displayed = useMemo(() => {
     const filtered = filterOn ? results.filter((r) => r.distance <= 1) : results;
@@ -53,6 +82,7 @@ export default function DynamicResultScreen() {
       <MapViewWithPin
         markers={displayed.map(({ latitude, longitude }) => ({ latitude, longitude }))}
         showUserLocation
+        onUserLocationChange={(coords) => setUserLocation(coords)}
       />
       <BottomSheet
         index={0}

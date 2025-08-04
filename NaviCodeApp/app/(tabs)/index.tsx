@@ -99,11 +99,7 @@ export default function HomeScreen() {
             onPress={() =>
               router.push({
                 pathname: '/dynamic-result',
-                params: {
-                  navicode: 'TEST123',
-                  latitude: '37.5665',
-                  longitude: '126.9780',
-                },
+                params: { navicode: 'TEST123' },
               })
             }
           >
