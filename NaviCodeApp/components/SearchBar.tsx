@@ -29,7 +29,8 @@ export function SearchBar({
   const { state } = useCode();
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
-  const { resultType, staticResult, dynamicResult, search } = useCoordSearch();
+  const { search } = useCoordSearch();
+
   const router = useRouter();
 
   const handleChangeText = (value: string) => {
@@ -53,6 +54,15 @@ export function SearchBar({
             name: res.staticResult.name,
             latitude: res.staticResult.latitude.toString(),
             longitude: res.staticResult.longitude.toString(),
+          },
+        });
+      } else if (res.type === '1') {
+        router.push({
+          pathname: '/dynamic-result',
+          params: {
+            navicode: text,
+            latitude: location?.latitude?.toString() ?? '',
+            longitude: location?.longitude?.toString() ?? '',
           },
         });
       }
@@ -113,16 +123,6 @@ export function SearchBar({
           )}
         </View>
       )}
-      {resultType === '1' && dynamicResult.length > 0 && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.sectionTitle}>동적 결과</Text>
-          {dynamicResult.map((item, idx) => (
-            <Text key={idx} style={styles.itemText}>
-              {item.name}
-            </Text>
-          ))}
-        </View>
-      )}
     </View>
   );
 }
@@ -150,15 +150,6 @@ function useStyles(theme: AppTheme) {
       color: theme.colors.textDefault,
     },
     dropdown: {
-      marginTop: theme.spacing.spacing1,
-      backgroundColor: theme.colors.backgroundDefault,
-      borderWidth: 1,
-      borderColor: theme.colors.borderDefault,
-      borderRadius: theme.spacing.spacing3,
-      padding: theme.spacing.spacing2,
-      gap: theme.spacing.spacing2,
-    },
-    resultContainer: {
       marginTop: theme.spacing.spacing1,
       backgroundColor: theme.colors.backgroundDefault,
       borderWidth: 1,
