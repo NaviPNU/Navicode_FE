@@ -107,6 +107,7 @@ export const spacing = {
   spacing14: 56,
   spacing15: 60,
   spacing16: 64,
+  spacingCLB: 90,
 } as const;
 
 export const fonts = {

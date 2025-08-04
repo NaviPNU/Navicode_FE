@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@emotion/react';
 import type { AppTheme } from '@/theme';
+import { BottomBar } from '@/components/BottomBar/BottomBar';
 
 export default function MyPageScreen() {
   const theme = useTheme() as AppTheme;
@@ -10,6 +11,7 @@ export default function MyPageScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>My Page Screen</Text>
+      <BottomBar selected="mypage" />
     </View>
   );
 }

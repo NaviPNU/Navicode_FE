@@ -7,6 +7,7 @@ import type { AppTheme } from '@/theme';
 import { MapViewWithPin } from '@/components/MapViewWithPin/MapViewWithPin';
 import { SearchBar } from '@/components/SearchBar';
 import { CurrentLocationButton } from '@/components/CurrentLocationButton';
+import { BottomBar } from '@/components/BottomBar/BottomBar';
 import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
@@ -120,7 +121,11 @@ export default function HomeScreen() {
         <View style={styles.searchOverlay} pointerEvents="box-none">
           <SearchBar location={userLocation} />
         </View>
-        <CurrentLocationButton onPress={handleCurrentLocation} />
+        <CurrentLocationButton
+          onPress={handleCurrentLocation}
+          style={styles.currentLocationButton}
+        />
+        <BottomBar selected="explore" />
       </View>
     </SafeAreaView>
   );
@@ -180,6 +185,9 @@ function useStyles(theme: AppTheme) {
       left: 0,
       right: 0,
       zIndex: 1,
+    },
+    currentLocationButton: {
+      bottom: theme.spacing.spacingCLB + theme.spacing.spacing4,
     },
   });
 }
