@@ -13,7 +13,6 @@ interface Coords {
   longitude: number;
 }
 
-
 interface MapViewWithPinProps {
   markerCoords?: Coords;
   markers?: Coords[];
@@ -48,9 +47,8 @@ export const MapViewWithPin = React.forwardRef<MapView, MapViewWithPinProps>(
           longitudeDelta: 0.01,
         }}
         showsUserLocation={showUserLocation}
-        onUserLocationChange={(e) =>
-          onUserLocationChange?.(e.nativeEvent.coordinate)
-        }
+        showsMyLocationButton={false}
+        onUserLocationChange={(e) => onUserLocationChange?.(e.nativeEvent.coordinate)}
       >
         {markerCoords && (
           <Marker
@@ -61,10 +59,7 @@ export const MapViewWithPin = React.forwardRef<MapView, MapViewWithPinProps>(
         )}
         {clusters.map((cluster, idx) =>
           cluster.count === 1 ? (
-            <Marker
-              key={`marker-${idx}`}
-              coordinate={cluster.markers[0]}
-            />
+            <Marker key={`marker-${idx}`} coordinate={cluster.markers[0]} />
           ) : (
             <Marker
               key={`cluster-${idx}`}

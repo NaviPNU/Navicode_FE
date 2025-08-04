@@ -10,7 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
 import { theme } from '@/theme';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CodeProvider } from '@/contexts/CodeContext';
@@ -32,12 +32,10 @@ function Navigation() {
 
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
 }
-
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -63,9 +61,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <CodeProvider>
-          <NavigationThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
+          <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <EmotionThemeProvider theme={theme}>
               <Navigation />
               <StatusBar style="auto" />
