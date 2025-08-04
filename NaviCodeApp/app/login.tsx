@@ -19,6 +19,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await signIn(username, password);
+      router.replace('/');
     } catch (e: any) {
       alert('로그인 실패: ' + e.message);
     }
