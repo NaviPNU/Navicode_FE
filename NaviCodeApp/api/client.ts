@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://222.122.81.141:5000';
+export const BASE_URL = 'http://10.156.246.163:8080';
 
 interface RequestOptions {
   method?: string;

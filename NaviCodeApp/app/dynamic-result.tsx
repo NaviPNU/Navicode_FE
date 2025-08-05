@@ -9,7 +9,7 @@ import { MapViewWithPin } from '@/components/MapViewWithPin/MapViewWithPin';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { getCoordDynamic, DynamicCoord } from '@/api/coord';
 import { CurrentLocationButton } from '@/components/CurrentLocationButton';
-
+import { LocationActionButtons } from '@/components/LocationActionButtons';
 interface ResultItem extends DynamicCoord {
   distance: number;
   time: number;
@@ -148,6 +148,10 @@ export default function DynamicResultScreen() {
               <Text style={styles.itemMeta}>
                 {item.distance.toFixed(2)}km · 약 {Math.round(item.time)}분
               </Text>
+              <LocationActionButtons
+                name={item.name}
+                coords={{ latitude: item.latitude, longitude: item.longitude }}
+              />
             </View>
           ))}
         </BottomSheetView>
@@ -205,6 +209,7 @@ function useStyles(theme: AppTheme) {
     },
     listItem: {
       paddingVertical: theme.spacing.spacing2,
+      gap: theme.spacing.spacing1,
     },
     itemName: {
       ...theme.typography.body1Bold,
