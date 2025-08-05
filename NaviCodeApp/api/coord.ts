@@ -6,7 +6,7 @@ export interface CoordTypeResponse {
 }
 
 export async function getCoordType(navicode: string) {
-  const data = await request<CoordTypeResponse>('/coord_type', {
+  const data = await request<CoordTypeResponse>('/location/coord_type', {
     body: { navicode },
   });
   return data.type;
@@ -19,7 +19,7 @@ export interface StaticCoord {
 }
 
 export async function getCoordStatic(navicode: string) {
-  return request<StaticCoord>('/get_coord_static', {
+  return request<StaticCoord>('/location/get_coord_static', {
     body: { navicode },
   });
 }
@@ -42,7 +42,7 @@ export async function getCoordDynamic(navicode: string, latitude: string, longit
   //   );
   // }
   //임시 데이터 끝 나중에 삭제
-  return request<DynamicCoord[]>('/get_coord_dynamic', {
+  return request<DynamicCoord[]>('/location/get_coord_dynamic', {
     body: { navicode, latitude, longitude },
   });
 }
