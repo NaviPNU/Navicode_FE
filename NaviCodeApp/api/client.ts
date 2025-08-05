@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://10.156.246.163:8080/api';
+export const BASE_URL = 'http://222.122.81.141:8080/api';
 
 interface RequestOptions {
   method?: string;
