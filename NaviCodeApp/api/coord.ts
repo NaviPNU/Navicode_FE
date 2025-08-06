@@ -46,6 +46,27 @@ export async function getCoordDynamic(navicode: string, latitude: string, longit
     body: { navicode, latitude, longitude },
   });
 }
+
+export interface AddCoordLocationRequest {
+  name: string;
+  latitude: string;
+  longitude: string;
+  type: '2';
+  navicode?: string;
+}
+
+export interface AddCoordLocationResponse {
+  success: 'true' | 'false';
+  message: string;
+  navicode?: string;
+}
+
+export async function addCoordLocation(payload: AddCoordLocationRequest) {
+  return request<AddCoordLocationResponse>('/location/add_coord_location', {
+    method: 'POST',
+    body: payload,
+  });
+}
 //임시 거리 계산 함수 시작
 // function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
 //   const R = 6371;

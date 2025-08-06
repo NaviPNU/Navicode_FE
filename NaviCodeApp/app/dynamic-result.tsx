@@ -123,7 +123,6 @@ export default function DynamicResultScreen() {
     }
   }, [navicode, userLocation, hasCentered]);
 
-
   const displayed = useMemo(() => {
     const filtered = filterOn ? results.filter((r) => r.distance <= 1) : results;
     return filtered.slice(0, 5);
@@ -184,12 +183,11 @@ export default function DynamicResultScreen() {
             <View key={selectedIdx} style={styles.listItem}>
               <Text style={styles.itemName}>{displayed[selectedIdx].name}</Text>
               <Text style={styles.itemMeta}>
-                {displayed[selectedIdx].distance.toFixed(2)}km · 약 {Math.round(
-                  displayed[selectedIdx].time,
-                )}분
+                {displayed[selectedIdx].distance.toFixed(2)}km · 약{' '}
+                {Math.round(displayed[selectedIdx].time)}분
               </Text>
             </View>
-         ) : (
+          ) : (
             displayed.map((item, idx) => (
               <View key={idx} style={styles.listItem}>
                 <Text style={styles.itemName}>{item.name}</Text>
@@ -197,18 +195,15 @@ export default function DynamicResultScreen() {
                   {item.distance.toFixed(2)}km · 약 {Math.round(item.time)}분
                 </Text>
                 <LocationActionButtons
-                name={item.name}
-                coords={{ latitude: item.latitude, longitude: item.longitude }}
-              />
+                  name={item.name}
+                  coords={{ latitude: item.latitude, longitude: item.longitude }}
+                />
               </View>
             ))
           )}
         </BottomSheetView>
       </BottomSheet>
-      <CurrentLocationButton
-        onPress={handleCurrentLocation}
-        style={styles.currentLocationButton}
-      />
+      <CurrentLocationButton onPress={handleCurrentLocation} style={styles.currentLocationButton} />
     </View>
   );
 }

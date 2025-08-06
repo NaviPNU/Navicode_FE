@@ -40,7 +40,7 @@ export default function StaticResultScreen() {
           <Text style={styles.coords}>
             {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
           </Text>
-         <LocationActionButtons name={name} coords={coords} />
+          <LocationActionButtons name={name} coords={coords} />
         </BottomSheetView>
       </BottomSheet>
     </View>

@@ -1,5 +1,14 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ToastAndroid, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ToastAndroid,
+  Platform,
+  Alert,
+} from 'react-native';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useTheme } from '@emotion/react';
@@ -9,14 +18,17 @@ import { SearchBar } from '@/components/SearchBar';
 import { CurrentLocationButton } from '@/components/CurrentLocationButton';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { BottomBar } from '@/components/BottomBar/BottomBar';
+import { addCoordLocation } from '@/api/coord';
 
 export default function MakeScreen() {
   const theme = useTheme() as AppTheme;
   const styles = useStyles(theme);
-    const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapView>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number }>();
   const [markerCoords, setMarkerCoords] = useState<{ latitude: number; longitude: number }>();
   const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+
   const snapPoints = useMemo(() => ['25%'], []);
 
   const handleCurrentLocation = async () => {
@@ -38,7 +50,9 @@ export default function MakeScreen() {
         console.warn('Permission to access location was denied');
         return;
       }
-      const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
       const coords = { latitude: position.coords.latitude, longitude: position.coords.longitude };
       setUserLocation(coords);
       setMarkerCoords(coords);
@@ -63,17 +77,60 @@ export default function MakeScreen() {
     })();
   }, []);
 
-  const generateRandomCode = () => Math.floor(1000 + Math.random() * 9000).toString();
-
-  const handleRegister = () => {
-    const finalCode = code.trim() === '' ? generateRandomCode() : code;
-    console.log('register', finalCode, markerCoords);
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(`등록 완료: ${finalCode}`, ToastAndroid.SHORT);
-    } else {
-      Alert.alert('등록 완료', finalCode);
+  const handleRegister = async () => {
+    if (!markerCoords || name.trim() === '') {
+      const msg = '이름과 위치를 모두 입력하세요';
+      if (Platform.OS === 'android') {
+        ToastAndroid.show(msg, ToastAndroid.SHORT);
+      } else {
+        Alert.alert(msg);
+      }
+      return;
     }
-    setCode('');
+
+    const payload: {
+      name: string;
+      latitude: string;
+      longitude: string;
+      type: '2';
+      navicode?: string;
+    } = {
+      name: name.trim(),
+      latitude: markerCoords.latitude.toString(),
+      longitude: markerCoords.longitude.toString(),
+      type: '2',
+    };
+    if (code.trim()) {
+      payload.navicode = code.trim();
+    }
+
+    try {
+      const res = await addCoordLocation(payload);
+      if (res.success === 'true') {
+        const message = `등록 완료: ${res.navicode}`;
+        if (Platform.OS === 'android') {
+          ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+          Alert.alert('등록 완료', res.navicode ?? '');
+        }
+        setCode('');
+        setName('');
+      } else {
+        const message = '등록 실패: 코드 중복';
+        if (Platform.OS === 'android') {
+          ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+          Alert.alert(message);
+        }
+      }
+    } catch (e) {
+      const message = '등록 중 오류가 발생했습니다';
+      if (Platform.OS === 'android') {
+        ToastAndroid.show(message, ToastAndroid.SHORT);
+      } else {
+        Alert.alert(message);
+      }
+    }
   };
 
   return (
@@ -93,7 +150,7 @@ export default function MakeScreen() {
       </View>
       <CurrentLocationButton onPress={handleCurrentLocation} style={styles.currentLocationButton} />
       <BottomBar selected="make" />
-            <BottomSheet
+      <BottomSheet
         index={0}
         snapPoints={snapPoints}
         bottomInset={theme.spacing.spacingCLB}
@@ -102,6 +159,13 @@ export default function MakeScreen() {
       >
         <BottomSheetView style={styles.sheetContent}>
           <Text style={styles.title}>정적 위치 등록</Text>
+          <TextInput
+            style={styles.singleInput}
+            value={name}
+            onChangeText={setName}
+            placeholder="장소 이름을 입력하세요"
+            placeholderTextColor={theme.colors.textPlaceholder}
+          />
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -152,6 +216,16 @@ function useStyles(theme: AppTheme) {
       borderColor: theme.colors.borderDefault,
       alignItems: 'center',
       paddingHorizontal: theme.spacing.spacing2,
+      backgroundColor: theme.colors.backgroundDefault,
+    },
+    singleInput: {
+      borderWidth: 1,
+      borderRadius: 999,
+      borderColor: theme.colors.borderDefault,
+      paddingVertical: theme.spacing.spacing3,
+      paddingHorizontal: theme.spacing.spacing3,
+      ...theme.typography.body2Regular,
+      color: theme.colors.textDefault,
       backgroundColor: theme.colors.backgroundDefault,
     },
     input: {
