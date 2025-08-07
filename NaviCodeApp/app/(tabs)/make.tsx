@@ -179,7 +179,12 @@ export default function MakeScreen() {
         }}
       />
       <View style={styles.searchOverlay} pointerEvents="box-none">
-        <SearchBar location={userLocation} keyboardType="default" onSearch={handlePlaceSearch} />
+        <SearchBar
+          placeholder="장소명, 지역명 검색"
+          location={userLocation}
+          keyboardType="default"
+          onSearch={handlePlaceSearch}
+        />
       </View>
       <CurrentLocationButton onPress={handleCurrentLocation} style={styles.currentLocationButton} />
       <BottomBar selected="make" />
