@@ -28,6 +28,7 @@ export default function MakeScreen() {
   const [markerCoords, setMarkerCoords] = useState<{ latitude: number; longitude: number }>();
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
 
   const snapPoints = useMemo(() => ['25%'], []);
 
@@ -78,8 +79,8 @@ export default function MakeScreen() {
   }, []);
 
   const handleRegister = async () => {
-    if (!markerCoords || name.trim() === '') {
-      const msg = '이름과 위치를 모두 입력하세요';
+    if (!markerCoords || name.trim() === '' || username.trim() === '') {
+      const msg = '사용자 이름과 장소 이름, 위치를 모두 입력하세요';
       if (Platform.OS === 'android') {
         ToastAndroid.show(msg, ToastAndroid.SHORT);
       } else {
@@ -92,14 +93,16 @@ export default function MakeScreen() {
       name: string;
       latitude: string;
       longitude: string;
-      type: '2';
+      type: 2;
+      username: string;
       navicode?: string;
     } = {
       name: name.trim(),
       latitude: markerCoords.latitude.toString(),
       longitude: markerCoords.longitude.toString(),
-      type: '2',
-    };
+      type: 2,
+      username: username.trim(),
+      };
     if (code.trim()) {
       payload.navicode = code.trim();
     }
@@ -115,6 +118,7 @@ export default function MakeScreen() {
         }
         setCode('');
         setName('');
+        setUsername('');
       } else {
         const message = '등록 실패: 코드 중복';
         if (Platform.OS === 'android') {
@@ -159,6 +163,13 @@ export default function MakeScreen() {
       >
         <BottomSheetView style={styles.sheetContent}>
           <Text style={styles.title}>정적 위치 등록</Text>
+          <TextInput
+            style={styles.singleInput}
+            value={username}
+            onChangeText={setUsername}
+            placeholder="사용자 이름을 입력하세요"
+            placeholderTextColor={theme.colors.textPlaceholder}
+          />
           <TextInput
             style={styles.singleInput}
             value={name}

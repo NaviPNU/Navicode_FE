@@ -59,7 +59,8 @@ describe('coord api', () => {
         name: 'test',
         latitude: '1',
         longitude: '2',
-        type: '2',
+        type: 2,
+        username: 'user',
         navicode: '3333',
       }),
     ).resolves.toEqual({ success: 'true', message: 'location added success', navicode: '3333' });
@@ -68,23 +69,24 @@ describe('coord api', () => {
   it('좌표 추가 요청을 올바르게 보낸다', async () => {
     mockFetch({ success: 'true', message: 'location added success', navicode: '3333' });
 
-    await addCoordLocation({
+  await addCoordLocation({
+    name: 'test',
+    latitude: '1',
+    longitude: '2',
+    type: 2,
+    username: 'user',
+    navicode: '3333',
+  });
+
+  expect(global.fetch).toHaveBeenCalledWith(`${BASE_URL}/location/add_coord_location`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
       name: 'test',
       latitude: '1',
       longitude: '2',
-      type: '2',
+      type: 2,
       navicode: '3333',
-    });
-
-    expect(global.fetch).toHaveBeenCalledWith(`${BASE_URL}/location/add_coord_location`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'test',
-        latitude: '1',
-        longitude: '2',
-        type: '2',
-        navicode: '3333',
       }),
     });
   });
