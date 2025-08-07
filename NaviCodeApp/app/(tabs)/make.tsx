@@ -33,6 +33,26 @@ export default function MakeScreen() {
   const username = state.user?.username ?? '';
   const snapPoints = useMemo(() => ['25%'], []);
 
+  const handlePlaceSearch = async (query: string) => {
+    try {
+      const results = await Location.geocodeAsync(query);
+      if (results.length > 0) {
+        const { latitude, longitude } = results[0];
+        const coords = { latitude, longitude };
+        setMarkerCoords(coords);
+        mapRef.current?.animateToRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+        setName(query);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
   const handleCurrentLocation = async () => {
     if (!mapRef.current) return;
 
@@ -159,7 +179,7 @@ export default function MakeScreen() {
         }}
       />
       <View style={styles.searchOverlay} pointerEvents="box-none">
-        <SearchBar location={userLocation} />
+        <SearchBar location={userLocation} keyboardType="default" onSearch={handlePlaceSearch} />
       </View>
       <CurrentLocationButton onPress={handleCurrentLocation} style={styles.currentLocationButton} />
       <BottomBar selected="make" />
@@ -211,7 +231,8 @@ function useStyles(theme: AppTheme) {
       zIndex: 1,
     },
     currentLocationButton: {
-      bottom: theme.spacing.spacingCLB + theme.spacing.spacing4,
+      top: theme.spacing.spacing6 + theme.spacing.spacing14,
+      bottom: undefined,
     },
     sheetContent: {
       padding: theme.spacing.spacing4,
