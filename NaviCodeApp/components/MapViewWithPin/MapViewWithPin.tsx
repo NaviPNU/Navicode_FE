@@ -58,9 +58,7 @@ export const MapViewWithPin = React.forwardRef<MapView, MapViewWithPinProps>(
         }}
         showsUserLocation={showUserLocation}
         showsMyLocationButton={false}
-        onUserLocationChange={(e) =>
-          onUserLocationChange?.(e.nativeEvent.coordinate as Coords)
-        }
+        onUserLocationChange={(e) => onUserLocationChange?.(e.nativeEvent.coordinate as Coords)}
         onPress={() => onMapPress?.()}
       >
         {markerCoords && (

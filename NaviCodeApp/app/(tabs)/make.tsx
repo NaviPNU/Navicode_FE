@@ -102,7 +102,7 @@ export default function MakeScreen() {
       longitude: markerCoords.longitude.toString(),
       type: 2,
       username: username.trim(),
-      };
+    };
     if (code.trim()) {
       payload.navicode = code.trim();
     }

@@ -48,7 +48,7 @@ describe('loginApi', () => {
 
     await loginApi('user', 'pass');
 
-    expect(global.fetch).toHaveBeenCalledWith('http://222.122.81.141:8080/auth/login', {
+    expect(global.fetch).toHaveBeenCalledWith('http://222.122.81.141:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: 'user', password: 'pass' }),
@@ -76,13 +76,10 @@ describe('registerApi', () => {
 
     await registerApi('newuser', 'pass');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      'http://222.122.81.141:8080/auth/register',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'newuser', password: 'pass' }),
-      },
-    );
+    expect(global.fetch).toHaveBeenCalledWith('http://222.122.81.141:8080/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'newuser', password: 'pass' }),
+    });
   });
 });
